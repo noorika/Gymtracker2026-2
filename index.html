@@ -127,10 +127,13 @@ nav{
   cursor:pointer;border:none;
   background:linear-gradient(135deg,var(--lime),#a0d830);
   box-shadow:0 2px 14px rgba(200,255,110,.3),inset 0 1px 0 rgba(255,255,255,.2);
-  transition:all .2s;
+  transition:all .25s;
+  position:relative;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
 }
-.dash-cta:hover{box-shadow:0 4px 22px rgba(200,255,110,.45);transform:translateY(-1px);}
-.dash-cta svg{width:22px;height:22px;stroke:#000;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.dash-cta:active{transform:scale(.93);}
+.dash-cta svg{width:22px;height:22px;stroke:#000;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;}
 
 .dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:12px}
 .dash-card{
@@ -203,285 +206,282 @@ nav{
 
 /* Base: dark – matches dashboard */
 #view-training{
-  background:var(--bg);
+  background:linear-gradient(160deg,#e8edf5 0%,#d8e0ec 40%,#e2e8f0 100%);
+  padding:0 !important;
 }
-
-/* When training is active (header visible), darken slightly */
+#view-training.active{display:block !important;}
 #view-training.training-active{
-  background:linear-gradient(180deg,#0e1018 0%,#0a0c12 100%);
+  background:linear-gradient(160deg,#e8edf5 0%,#d8e0ec 40%,#e2e8f0 100%);
 }
 
 /* animated training header */
 .training-header{
-  background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
-  border:1px solid rgba(255,255,255,.09);border-radius:14px;
-  padding:14px 18px;margin-bottom:12px;
-  box-shadow:0 2px 12px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08);
-  animation:slideDown .3s cubic-bezier(.4,0,.2,1);
+  background:rgba(255,255,255,.65);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.9);border-radius:14px;
+  padding:14px 18px;margin:12px 16px 8px;
+  box-shadow:0 4px 20px rgba(60,80,120,.1),inset 0 1px 0 rgba(255,255,255,.95);
 }
-@keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
-.training-header-day{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--sub);font-weight:600;margin-bottom:2px}
-.training-header-name{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.05em;line-height:1;color:var(--text);}
+.training-header-day{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:rgba(60,80,120,.6);font-weight:600;margin-bottom:2px}
+.training-header-name{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.05em;line-height:1;color:rgba(20,28,50,.9);}
 
-#view-training{
-  display:none;
-  flex-direction:column;
-  padding:0;
-  overflow:hidden;
+#view-training #training-content{padding:0 16px 80px;}
+
+#view-training .training-header{padding:14px 20px 0;}
+#view-training #training-content{padding:0 12px 12px;}
+/* ─── DAY SELECTION SCREEN ─── */
+.day-select-screen{
+  padding-top:80px;
+  padding-left:0;
+  padding-right:0;
+  padding-bottom:24px;
+  animation:fadeIn .3s ease;
+  min-height:100%;
 }
-#view-training.active{display:flex;}
-#view-training .training-header{flex-shrink:0;padding:14px 20px 0;}
-#view-training #training-content{flex:1;overflow-y:auto;padding:0 12px 12px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
-#view-training #training-content::-webkit-scrollbar{width:3px;}
-#view-training #training-content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-.day-carousel-wrap{
-  flex:1;min-height:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:0 20px 16px;
-  animation:fadeIn .35s ease;
-}
-.carousel-hint{font-size:9px;color:var(--dim);letter-spacing:.06em;margin-bottom:8px;text-align:center;width:100%;flex-shrink:0;}
+.day-select-spacer{display:none;}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.carousel-label{
-  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em;
-  background:linear-gradient(135deg,var(--text) 30%,var(--sub));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  margin-bottom:2px;text-align:center;width:100%;flex-shrink:0;
+.day-select-title{
+  font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:.1em;
+  color:rgba(20,24,36,.55);margin-bottom:16px;text-align:center;
+  text-transform:uppercase;font-weight:700;
+  text-shadow:0 1px 0 rgba(255,255,255,.8);
+}
+.day-select-body{
+  display:flex;gap:10px;
+  align-items:center;
+  padding:0 16px;
 }
 
-/* side-by-side layout */
-.vcarousel-layout{
-  display:flex;align-items:stretch;gap:14px;width:100%;
-  height:300px;flex-shrink:0;
-}
-
-/* left detail panel */
-.vcarousel-detail{
+/* ── LEFT: detail panel — frosted glass ── */
+.day-detail-panel{
   flex:1;min-width:0;
-  opacity:0;transform:translateX(-6px);
-  transition:opacity .3s ease, transform .3s ease;
+  display:flex;flex-direction:column;gap:8px;
+  background:rgba(255,255,255,.65);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(255,255,255,.9);
+  border-radius:18px;
+  padding:18px 16px 14px;
+  box-shadow:0 8px 32px rgba(60,70,100,.12), inset 0 1px 0 rgba(255,255,255,.95);
+  position:relative;overflow:hidden;
+  height:400px;
+  flex-shrink:0;
+  justify-content:center;
+}
+.day-detail-panel::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent);
   pointer-events:none;
-  display:flex;flex-direction:column;gap:10px;justify-content:center;
 }
-.vcarousel-detail.visible{opacity:1;transform:translateX(0);pointer-events:auto;}
-.vcd-name{
-  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;
-  line-height:1;transition:color .25s;margin-top:14px;
+.ddp-label{
+  font-size:8.5px;letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(60,70,100,.55);font-weight:700;margin-bottom:2px;
 }
-.vcd-tags{display:flex;gap:5px;flex-wrap:wrap;}
-.vcd-tag{
+.ddp-name{
+  font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.04em;
+  line-height:1;transition:color .2s;
+}
+.ddp-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px;}
+.ddp-tag{
   display:inline-flex;align-items:center;
-  padding:4px 10px;border-radius:100px;
-  font-size:9.5px;font-weight:700;letter-spacing:.05em;
-  border:1px solid currentColor;
-  white-space:nowrap;
+  padding:2px 8px;border-radius:100px;
+  font-size:8.5px;font-weight:700;letter-spacing:.05em;
+  border:1px solid currentColor;white-space:nowrap;
 }
-.vcd-exlist{
-  background:linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:12px;
-  padding:10px 12px;
-  display:flex;flex-direction:column;gap:5px;
-  overflow-y:auto;scrollbar-width:none;flex:1;min-height:0;
+.ddp-hint{font-size:8.5px;color:rgba(80,90,120,.6);letter-spacing:.04em;margin-top:2px;}
+.ddp-exlist{
+  flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;
+  display:flex;flex-direction:column;gap:0;
+  margin-top:2px;
 }
-.vcd-exlist::-webkit-scrollbar{display:none;}
-.vcd-ex{
-  font-size:10.5px;color:var(--sub);
-  display:flex;align-items:center;gap:7px;
-  line-height:1.3;padding:3px 0;
-  border-bottom:1px solid rgba(255,255,255,.04);
+.ddp-exlist::-webkit-scrollbar{display:none;}
+.ddp-ex{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 4px;
+  cursor:pointer;transition:background .15s,opacity .15s;
+  border-bottom:1px solid rgba(60,70,100,.08);
+  border-radius:6px;
+  -webkit-tap-highlight-color:transparent;
 }
-.vcd-ex:last-child{border-bottom:none;}
-.vcd-ex-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;background:currentColor;opacity:.5;}
-.vcd-ex-toggle{cursor:pointer;border-radius:4px;padding:3px 4px;margin:-3px -4px;transition:background .15s;}
-.vcd-ex-toggle:hover{background:rgba(255,255,255,.06);}
-.vcd-ex-toggle.vcd-ex-off{opacity:.5;}
+.ddp-ex:last-child{border-bottom:none;}
+.ddp-ex:active{background:rgba(60,70,100,.06);}
+.ddp-ex.off{opacity:.3;}
+.ddp-ex.off .ddp-ex-name{text-decoration:line-through;}
+.ddp-ex-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;transition:background .2s;}
+.ddp-ex-name{font-size:10.5px;color:rgba(20,28,50,.85);font-weight:500;line-height:1.3;}
+.ddp-start-btn{
+  flex-shrink:0;
+  padding:11px 0;border-radius:12px;border:none;
+  background:linear-gradient(135deg,var(--lime),#8ab870);
+  color:#000;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
+  cursor:pointer;letter-spacing:.05em;
+  box-shadow:0 4px 16px rgba(100,160,100,.3),inset 0 1px 0 rgba(255,255,255,.3);
+  transition:box-shadow .2s;
+  margin-top:4px;
+}
+.ddp-start-btn:active{box-shadow:0 2px 8px rgba(100,160,100,.2);}
 
-/* vertical wheel picker */
-.day-carousel-outer{
-  position:relative;width:156px;flex-shrink:0;
-  height:300px;
-  border-radius:16px;overflow:hidden;
-}
-.day-carousel-outer::before,
-.day-carousel-outer::after{
-  content:'';position:absolute;left:0;right:0;height:28%;z-index:3;pointer-events:none;
-}
-.day-carousel-outer::before{top:0;background:linear-gradient(to bottom,var(--bg) 10%,transparent 100%);}
-.day-carousel-outer::after{bottom:0;background:linear-gradient(to top,var(--bg) 10%,transparent 100%);}
-.day-carousel-selector{
-  position:absolute;top:50%;left:6px;right:6px;
-  transform:translateY(-50%);height:70px;
-  border-top:1px solid rgba(255,255,255,.13);
-  border-bottom:1px solid rgba(255,255,255,.13);
-  border-radius:10px;background:rgba(255,255,255,.035);
-  pointer-events:none;z-index:4;
-}
-.day-carousel{
-  position:absolute;inset:0;
+/* ── RIGHT: letter column — frosted glass ── */
+.day-letter-col{
   display:flex;flex-direction:column;
-  overflow-y:scroll;overflow-x:hidden;
-  scrollbar-width:none;-ms-overflow-style:none;
-  -webkit-overflow-scrolling:touch;
+  justify-content:space-between;
+  gap:5px;flex-shrink:0;width:60px;
+  padding:0;
 }
-.day-carousel::-webkit-scrollbar{display:none;}
-.vwheel-spacer{display:block;height:50%;flex-shrink:0;}
-.carousel-item{
-  flex-shrink:0;height:70px;
-  display:flex;flex-direction:column;justify-content:center;align-items:flex-end;
-  padding:0 16px;margin:2px 0;
-  cursor:pointer;position:relative;
-  transition:opacity .18s;opacity:.28;
-  -webkit-tap-highlight-color:transparent;user-select:none;
-  text-align:right;border-radius:10px;
+.day-letter-btn{
+  flex:none;
+  height:60px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:28px;
+  color:rgba(60,70,120,.3);
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.7);
+  background:rgba(255,255,255,.45);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  box-shadow:0 2px 8px rgba(60,70,100,.1),inset 0 1px 0 rgba(255,255,255,.8);
+  cursor:pointer;
+  transition:color .2s, text-shadow .2s, background .2s, border-color .2s, font-size .15s, box-shadow .2s;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  position:relative;overflow:hidden;
 }
-.carousel-item.snap-center{opacity:1;}
-.carousel-letter{
-  font-family:'Bebas Neue',sans-serif;font-size:48px;line-height:1;
-  display:block;text-align:right;
-  transition:text-shadow .25s, font-size .2s;
+.day-letter-btn::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);
+  pointer-events:none;
 }
-.carousel-item.snap-center .carousel-letter{font-size:64px;text-shadow:0 0 28px currentColor;}
-.carousel-name{
-  font-size:9px;font-weight:600;color:var(--sub);
-  line-height:1.2;text-align:right;margin-top:1px;
-  transition:color .2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:128px;
+.day-letter-btn.active{
+  color:var(--dc);
+  font-size:40px;
+  text-shadow:0 0 14px var(--dc), 0 0 28px var(--dc);
+  border-color:var(--dc);
+  background:rgba(255,255,255,.75);
+  box-shadow:0 4px 16px color-mix(in srgb,var(--dc) 25%,transparent),inset 0 1px 0 rgba(255,255,255,.9);
 }
-.carousel-item.snap-center .carousel-name{color:var(--text);}
-.carousel-tags,.carousel-tap-hint{display:none;}
-.carousel-dots-row{display:flex;gap:4px;margin-top:8px;justify-content:center;flex-shrink:0;}
-.carousel-dot{width:4px;height:4px;border-radius:50%;background:var(--border2);transition:all .25s;}
-.carousel-dot.active{background:var(--lime);height:12px;border-radius:2px;}
 
-/* exercise blocks – no border, separator-only */
+/* ─── EXERCISE BLOCKS ─── */
 .ex-block{
-  background:transparent;
-  border:none;
-  border-bottom:1px solid rgba(255,255,255,.06);
-  border-radius:0;margin-bottom:0;
-  overflow:visible;
+  background:rgba(255,255,255,.65);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.9);
+  border-radius:18px;
+  margin-bottom:12px;
+  overflow:hidden;
+  box-shadow:0 4px 20px rgba(60,80,120,.08),inset 0 1px 0 rgba(255,255,255,.95);
 }
-.ex-block:last-of-type{border-bottom:none;}
-.ex-block.drag-over{background:rgba(168,200,160,.04);}
-.ex-block.group-separator{background:transparent;border:none;border-bottom:1px dashed rgba(120,104,168,.3);}
+.ex-block.drag-over{border-color:rgba(80,160,80,.4);}
+.ex-block.group-separator{background:transparent;border:none;border-bottom:1px dashed rgba(100,120,200,.2);border-radius:0;box-shadow:none;margin-bottom:4px;}
 .ex-block-head{
   display:flex;align-items:center;justify-content:space-between;
-  padding:8px 0 6px;
-  background:transparent;
-  border-bottom:1px solid rgba(255,255,255,.07);
+  padding:10px 16px 8px;
+  background:rgba(255,255,255,.4);
+  border-bottom:1px solid rgba(60,80,120,.07);
 }
-.ex-block-left{display:flex;align-items:center;gap:6px}
-.ex-block-type{font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;padding:2px 7px;border-radius:100px;flex-shrink:0}
-.type-ss{background:rgba(168,200,160,.12);color:var(--lime);border:1px solid rgba(168,200,160,.22)}
-.type-solo{background:rgba(255,255,255,.06);color:var(--sub);border:1px solid rgba(255,255,255,.1)}
-.type-fin{background:rgba(96,144,184,.12);color:var(--blue);border:1px solid rgba(96,144,184,.22)}
-.ex-block-note{font-size:10px;color:var(--dim);font-style:italic}
-.rest-badge{font-size:10px;color:var(--sub);display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0}
+.ex-block-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
+.ex-block-type{font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;padding:3px 10px;border-radius:100px;flex-shrink:0;}
+.type-ss{background:rgba(100,180,100,.1);color:#3a8a3a;border:1px solid rgba(100,180,100,.3);}
+.type-solo{background:rgba(60,80,120,.07);color:rgba(60,80,120,.7);border:1px solid rgba(60,80,120,.18);}
+.type-fin{background:rgba(60,120,180,.08);color:#2060a0;border:1px solid rgba(60,120,180,.22);}
+.ex-block-note{font-size:11px;color:rgba(80,100,140,.55);font-style:italic;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rest-badge{font-size:11px;color:rgba(80,100,140,.65);display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;}
+.block-del-btn{background:transparent;border:none;color:rgba(60,80,120,.3);cursor:pointer;font-size:14px;padding:4px 4px 4px 8px;flex-shrink:0;}
+.block-del-btn:hover{color:rgba(180,40,40,.6);}
+.block-note-input{background:transparent;border:none;color:rgba(80,100,140,.6);font-size:11px;font-family:'Syne',sans-serif;outline:none;flex:1;min-width:0;font-style:italic;}
+.block-note-input::placeholder{color:rgba(80,100,140,.3);}
 
-/* single exercise row */
-.ex-row{
-  padding:8px 0 4px;
-  border-bottom:1px solid rgba(255,255,255,.05);
-  display:block;
-  transition:background .4s ease;
-  background:transparent;
-}
-.ex-row:last-child{border-bottom:none}
-.ex-row.ex-completed{background:rgba(200,255,110,.04);}
-.ex-row.ex-completed .ex-name{color:var(--lime);text-shadow:0 0 10px rgba(200,255,110,.25);}
-.ex-main{}
-/* header: name left, type-badge + muscles right → now type-badge above, then name + muscles in a single compact row */
-.ex-header-row{display:flex;align-items:baseline;gap:6px;margin-bottom:3px;flex-wrap:wrap}
-.ex-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.2;flex:1;min-width:0}
-/* muscle tags inline after name */
-.ex-inline-tags{display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
-.ex-muscle-tags{display:flex;gap:5px;flex-wrap:wrap}
-.mtag{font-size:9px;padding:1px 6px;border-radius:100px;font-weight:600}
-.m-trapez{background:rgba(255,208,96,.18);color:#ffd060;border:1px solid rgba(255,208,96,.3);}
-.m-brust{background:rgba(255,101,64,.14);color:#ff8060}
-.m-ruecken{background:rgba(64,224,160,.14);color:#40e0a0}
-.m-schulter{background:rgba(155,127,255,.14);color:var(--purple)}
-.m-nacken{background:rgba(255,208,96,.14);color:var(--yellow)}
-.m-bizeps{background:rgba(64,224,160,.14);color:#4eeebb}
-.m-trizeps{background:rgba(255,95,160,.14);color:var(--pink)}
-.m-core{background:rgba(79,163,255,.14);color:var(--blue)}
-.m-beine{background:rgba(255,208,96,.14);color:#ffd060}
-.m-waden{background:rgba(79,163,255,.1);color:#80c0ff}
-.m-seilzug{background:rgba(155,127,255,.1);color:#c4b5fd}
-.m-klimmzug{background:rgba(184,255,87,.1);color:var(--lime)}
+/* exercise row */
+.ex-row{padding:14px 16px 4px;border-bottom:1px solid rgba(60,80,120,.07);background:transparent;transition:background .3s;}
+.ex-row:last-child{border-bottom:none;}
+.ex-row.ex-completed{background:rgba(80,180,80,.04);}
+.ex-row.ex-completed .ex-name{color:#3a7a3a;}
+.ex-row-title{display:flex;align-items:center;gap:10px;margin-bottom:3px;}
+.ex-num{font-family:'Bebas Neue',sans-serif;font-size:22px;color:rgba(60,80,120,.25);line-height:1;flex-shrink:0;width:22px;}
+.ex-name{font-size:15px;font-weight:700;color:rgba(20,28,50,.9);line-height:1.2;flex:1;min-width:0;}
+.ex-subtitle{font-size:11px;color:rgba(80,100,140,.5);font-style:italic;margin-bottom:8px;padding-left:32px;}
 
-/* SET TRACKER */
-.set-tracker{display:flex;flex-direction:column;gap:4px;margin-top:4px}
-.set-hint{font-size:10px;color:var(--dim);margin-top:0;font-style:italic}
-.prog-suggestion{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--lime);background:rgba(168,200,160,.08);border:1px solid rgba(168,200,160,.18);border-radius:6px;padding:2px 8px;cursor:pointer;transition:all .2s}
-.add-set-btn{margin-top:2px;padding:3px 8px;border-radius:6px;border:1px dashed var(--border2);background:transparent;color:var(--dim);font-size:10px;font-family:'Syne',sans-serif;cursor:pointer;transition:all .2s}
-/* set status dots */
-.set-dots{display:flex;gap:4px;margin-bottom:4px;align-items:center;}
-.set-dot-item{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--border2);background:transparent;transition:all .2s;flex-shrink:0;}
-.set-dot-item.done{background:var(--lime);border-color:var(--lime);box-shadow:0 0 4px rgba(168,200,160,.35);}
-.set-dots-label{font-size:9px;color:var(--dim);letter-spacing:.06em;margin-left:3px;}
+/* suggestion pill + change weight button */
+.sugg-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:6px 12px;border-radius:10px;cursor:pointer;border:1.5px solid rgba(60,160,80,.35);background:rgba(60,160,80,.09);color:rgba(30,110,50,.85);transition:all .15s;}
+.sugg-inc{border-color:rgba(200,120,40,.35);background:rgba(200,120,40,.08);color:rgba(150,80,20,.85);}
+.weight-change-btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:6px 12px;border-radius:10px;cursor:pointer;border:1.5px solid rgba(60,80,120,.18);background:rgba(255,255,255,.7);color:rgba(60,80,120,.65);font-family:'Syne',sans-serif;transition:all .15s;}
 
-/* set row — full width, ✓ · [−+] as two grid cells */
-.set-row{display:grid;grid-template-columns:38px 1fr 26px 44px;gap:2px;align-items:center;}
-.set-label{font-size:10px;color:var(--sub);font-weight:600;text-align:left;line-height:1.2;}
-.set-actions{display:flex;align-items:center;gap:0;}
-/* ± buttons side by side inside .set-actions */
-.set-plus-btn{
-  width:26px;height:36px;border-radius:0;border:none;
-  background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  font-size:16px;color:rgba(200,255,110,.4);transition:all .15s;flex-shrink:0;line-height:1;
-}
-.set-plus-btn:hover{color:var(--lime);}
-.set-minus-btn{
-  width:26px;height:36px;border-radius:0;border:none;
-  background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  font-size:18px;color:rgba(255,74,106,.35);transition:all .15s;flex-shrink:0;line-height:1;
-}
-.set-minus-btn:hover{color:var(--red);}
+/* status dots */
+.set-dots{display:flex;gap:5px;margin-bottom:10px;align-items:center;padding-left:32px;}
+.set-dot-item{width:7px;height:7px;border-radius:50%;border:1.5px solid rgba(60,80,120,.25);background:transparent;transition:all .2s;flex-shrink:0;}
+.set-dot-item.done{background:#5a9a5a;border-color:#5a9a5a;}
+.set-dots-label{font-size:10px;color:rgba(80,100,140,.5);margin-left:4px;}
 
-/* ─── HORIZONTAL WHEELS – square, outline only ─── */
-.hwheel-group{display:flex;align-items:center;gap:2px;min-width:0;flex:1;}
+/* set rows: Satz label | weight wheel | reps wheel | checkbox */
+.set-tracker{display:flex;flex-direction:column;gap:7px;margin-bottom:4px;}
+.set-row{display:grid;grid-template-columns:52px minmax(0,1fr) minmax(0,80px) 46px;gap:8px;align-items:center;padding:0 16px;}
+.set-label{font-size:11px;color:rgba(80,100,140,.5);font-weight:600;text-align:right;}
+.set-col{display:flex;align-items:center;width:100%;min-width:0;}
+.set-col .hwheel-track{width:100%;min-width:0;flex:1;}
+.set-actions{display:flex;align-items:center;justify-content:center;}
+
+/* add set + bottom area */
+.add-set-row{padding:8px 16px 14px;}
+.add-set-btn-new{width:100%;padding:10px;border-radius:12px;border:1.5px dashed rgba(60,80,120,.22);background:transparent;color:rgba(60,80,120,.45);font-family:'Syne',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
+.add-set-btn-new:hover{border-color:rgba(60,80,120,.4);color:rgba(60,80,120,.7);}
+
+/* ─── HORIZONTAL WHEELS ─── */
+.hwheel-group{display:flex;align-items:center;gap:4px;min-width:0;flex:1;}
 .hwheel-track{
-  flex:1;min-width:0;
-  display:flex;
-  overflow-x:scroll;overflow-y:hidden;
-  scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-  height:36px;align-items:center;
-  border-radius:4px;
-  border:1px solid rgba(255,255,255,.09);
-  background:transparent;
-  position:relative;
+  flex:1;min-width:0;display:flex;
+  overflow-x:scroll;overflow-y:hidden;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  height:46px;align-items:center;
+  border-radius:12px;
+  border:1.5px solid rgba(60,80,140,.12);
+  background:rgba(28,32,44,.9);position:relative;
+  box-sizing:border-box;
 }
 .hwheel-track::-webkit-scrollbar{display:none;}
-.hwheel-spacer{display:inline-block;min-width:calc(50% - 20px);flex-shrink:0;}
+.hwheel-spacer{display:inline-block;min-width:calc(50% - 24px);flex-shrink:0;}
 .hwheel-item{
-  min-width:40px;height:34px;
-  display:inline-flex;align-items:center;justify-content:center;
-  scroll-snap-align:center;
-  font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.04em;
-  color:rgba(255,255,255,.2);
-  cursor:pointer;flex-shrink:0;
-  transition:color .1s, font-size .1s;
-  user-select:none;-webkit-tap-highlight-color:transparent;
+  min-width:48px;height:44px;display:inline-flex;align-items:center;justify-content:center;
+  scroll-snap-align:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;
+  color:rgba(255,255,255,.18);cursor:pointer;flex-shrink:0;
+  transition:color .1s,font-size .1s;user-select:none;-webkit-tap-highlight-color:transparent;
 }
-.hwheel-item.active{color:#f0f2f8;font-size:20px;}
-.hwheel-unit{font-size:9px;color:var(--dim);letter-spacing:.04em;flex-shrink:0;width:12px;text-align:center;}
-.hwheel-sep{font-size:10px;color:var(--dim);flex-shrink:0;padding:0;}
-.bw-track{border-color:rgba(168,200,160,.15);}
+.hwheel-item.active{color:#f0f2f8;font-size:24px;}
+.hwheel-unit{font-size:9px;color:rgba(60,80,140,.45);flex-shrink:0;width:14px;text-align:center;}
+.hwheel-sep{font-size:11px;color:rgba(60,80,140,.35);flex-shrink:0;padding:0 2px;}
+.bw-track{background:rgba(20,44,28,.9);}
 
-/* done btn – no background, outline on done */
+/* done btn – circle */
 .set-done-btn{
-  width:28px;height:36px;border-radius:4px;
-  border:1px solid rgba(255,255,255,.09);
-  background:transparent;
+  width:46px;height:46px;border-radius:12px;
+  border:1.5px solid rgba(60,80,140,.18);background:rgba(255,255,255,.85);
   cursor:pointer;display:flex;align-items:center;justify-content:center;
-  font-size:14px;color:rgba(255,255,255,.25);transition:all .15s;flex-shrink:0;
+  font-size:18px;color:rgba(60,100,200,.45);transition:all .15s;flex-shrink:0;
 }
-.set-done-btn:hover{border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.6);}
-.set-done-btn.done{border-color:var(--lime);color:var(--lime);background:transparent;}
+.set-done-btn.done{border-color:#5a9a5a;color:#5a9a5a;background:rgba(80,180,80,.08);}
+.set-plus-btn{display:none;}
+.set-minus-btn{display:none;}
 
+/* muscle tags */
+.ex-inline-tags{display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
+.ex-muscle-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.mtag{font-size:9px;padding:2px 8px;border-radius:100px;font-weight:600;}
+.m-trapez{background:rgba(255,200,60,.15);color:#8a6010;border:1px solid rgba(255,200,60,.3);}
+.m-brust{background:rgba(255,90,50,.12);color:#a03020;}
+.m-ruecken{background:rgba(50,200,140,.12);color:#207055;}
+.m-schulter{background:rgba(140,110,240,.12);color:#5040a0;}
+.m-nacken{background:rgba(200,160,50,.12);color:#806020;}
+.m-bizeps{background:rgba(50,210,150,.12);color:#207060;}
+.m-trizeps{background:rgba(240,80,150,.12);color:#902060;}
+.m-core{background:rgba(70,150,240,.12);color:#1850a0;}
+.m-beine{background:rgba(255,200,60,.12);color:#806010;}
+.m-waden{background:rgba(70,150,240,.1);color:#205880;}
+.m-seilzug{background:rgba(140,110,240,.1);color:#504090;}
+.m-klimmzug{background:rgba(90,190,50,.1);color:#3a6020;}
+
+/* session-timer */
+#session-timer{color:#2a6a2a !important;}
+.set-hint{display:none;}
+.prog-suggestion{display:none;}
+.add-set-btn{display:none;}
 .wheel-wrap{display:none;}
 .reps-input{display:none;}
 
@@ -489,8 +489,8 @@ nav{
 .save-session-area{
   flex-shrink:0;display:none;align-items:center;justify-content:space-between;
   padding:8px 16px;padding-bottom:calc(8px + env(safe-area-inset-bottom));
-  background:rgba(8,10,14,.96);backdrop-filter:blur(20px);
-  border-top:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(60,80,120,.12);
   gap:8px;position:relative;
 }
 /* progress bar on top of footer border */
@@ -526,7 +526,123 @@ nav{
 .save-btn svg{width:17px;height:17px;stroke:#000;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
 .session-info{font-size:11px;color:var(--sub);white-space:nowrap;flex:1;min-width:0;}
 
-/* ─── HISTORY VIEW ─── */
+/* ─── LIGHT GLASS THEME – Verlauf, Plan, Übungen ─── */
+#view-history,#view-plan,#view-uebungen{
+  background:linear-gradient(160deg,#e8edf5 0%,#d8e0ec 40%,#e2e8f0 100%);
+}
+
+/* section titles */
+#view-history .section-title,
+#view-plan .section-title,
+#view-uebungen .section-title{
+  background:none;
+  -webkit-text-fill-color:unset;
+  color:rgba(20,28,50,.75);
+  text-shadow:0 1px 0 rgba(255,255,255,.8);
+}
+#view-history .sec-sub,
+#view-plan .sec-sub,
+#view-uebungen .sec-sub{color:rgba(60,80,120,.55);}
+
+/* ── HISTORY ── */
+.hfilter{border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.45);color:rgba(40,55,90,.6);backdrop-filter:blur(8px);}
+.hfilter:hover{border-color:rgba(255,255,255,.95);background:rgba(255,255,255,.65);color:rgba(20,30,60,.85);}
+.hfilter.active{background:rgba(255,255,255,.75);border-color:rgba(255,255,255,.9);color:rgba(20,28,50,.9);box-shadow:0 2px 8px rgba(60,80,120,.1);}
+
+.hist-session{
+  background:rgba(255,255,255,.6);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.85);
+  border-radius:16px;
+  box-shadow:0 4px 20px rgba(60,80,120,.08),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.hist-head:hover{background:rgba(255,255,255,.35);}
+.hist-day-name{color:rgba(20,28,50,.9);}
+.hist-date{color:rgba(60,80,120,.55);}
+.hist-vol{color:rgba(60,80,120,.55);}
+.hist-body{border-top-color:rgba(60,80,120,.1);}
+.hist-ex-row{border-bottom-color:rgba(60,80,120,.08);}
+.hist-ex-name{color:rgba(20,28,50,.9);}
+.hist-ex-sets{color:rgba(60,80,120,.6);}
+.hist-chevron{color:rgba(60,80,120,.45);}
+
+.chart-section{
+  background:rgba(255,255,255,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.85);border-radius:16px;
+  box-shadow:0 4px 20px rgba(60,80,120,.08),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.chart-title{color:rgba(60,80,120,.6);}
+.chart-sub{color:rgba(80,100,140,.5);}
+.chart-select{background:rgba(255,255,255,.7);border-color:rgba(255,255,255,.8);color:rgba(20,28,50,.85);}
+
+/* ── PLAN ── */
+.plan-edit-tabs .plan-etab{
+  border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.45);color:rgba(40,55,90,.6);
+  backdrop-filter:blur(8px);
+}
+.plan-edit-tabs .plan-etab:hover{background:rgba(255,255,255,.65);color:rgba(20,30,60,.85);}
+.plan-edit-tabs .plan-etab.active{background:rgba(255,255,255,.75);border-color:rgba(255,255,255,.9);color:rgba(20,28,50,.9);}
+
+.plan-ex-edit-item{
+  background:rgba(255,255,255,.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.85);border-radius:12px;
+  box-shadow:0 2px 8px rgba(60,80,120,.06);
+}
+.plan-ex-edit-item:hover{border-color:rgba(255,255,255,.95);}
+.plan-ex-edit-name{color:rgba(20,28,50,.9);}
+.plan-ex-edit-meta{color:rgba(60,80,120,.55);}
+.plan-drag-handle{color:rgba(60,80,120,.35);}
+
+.plan-add-card{
+  background:rgba(255,255,255,.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px dashed rgba(100,130,200,.3);border-radius:14px;
+}
+.plan-section-head{
+  background:rgba(255,255,255,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.8);border-radius:14px;
+  box-shadow:0 2px 8px rgba(60,80,120,.06);
+}
+.add-group-btn{
+  border-color:rgba(100,130,200,.3);color:rgba(60,80,120,.5);
+  background:rgba(255,255,255,.35);
+}
+
+/* ── ÜBUNGEN ── */
+.ueb-dtab{
+  border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.45);color:rgba(40,55,90,.6);
+  backdrop-filter:blur(8px);
+}
+.ueb-dtab:hover{background:rgba(255,255,255,.65);color:rgba(20,30,60,.85);}
+.ueb-dtab.active{background:rgba(255,255,255,.75);border-color:rgba(255,255,255,.9);color:rgba(20,28,50,.9);}
+
+.ueb-card{
+  background:rgba(255,255,255,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.85);border-radius:18px;
+  box-shadow:0 4px 20px rgba(60,80,120,.08),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.ueb-card:hover{border-color:rgba(255,255,255,.95);box-shadow:0 8px 32px rgba(60,80,120,.14);}
+.ueb-card-img{background:rgba(220,230,245,.6);}
+.ueb-card-name{color:rgba(20,28,50,.9);}
+.ueb-card-note{color:rgba(60,80,120,.6);}
+.ueb-card-footer{background:rgba(240,245,255,.5);border-top-color:rgba(60,80,120,.08);}
+.ueb-footer-sets{color:rgba(60,80,120,.55);}
+.ueb-footer-sets b{color:rgba(20,28,50,.85);}
+.ueb-mini-label{color:rgba(60,80,120,.55);}
+.ueb-mini-track{background:rgba(60,80,120,.1);}
+
+/* prog section in history */
+#view-history .prog-section,#view-history .recent-section{
+  background:rgba(255,255,255,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:0 4px 20px rgba(60,80,120,.08),inset 0 1px 0 rgba(255,255,255,.9);
+}
+#view-history .prog-title,#view-history .prog-name{color:rgba(60,80,120,.7);}
+#view-history .prog-val{color:rgba(80,100,140,.5);}
+#view-history .prog-bar-wrap{background:rgba(60,80,120,.1);}
+#view-history .log-name{color:rgba(20,28,50,.9);}
+#view-history .log-detail{color:rgba(60,80,120,.55);}
+#view-history .log-entry{border-bottom-color:rgba(60,80,120,.08);}
+#view-history .empty-state{color:rgba(60,80,120,.4);}
 .history-filters{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
 .hfilter{padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--sub);font-family:'Syne',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
 .hfilter:hover{border-color:var(--border2);color:var(--text)}
@@ -750,8 +866,9 @@ canvas{width:100%!important;max-height:220px}
       <div class="dash-greeting" id="dash-greeting">GUTEN MORGEN</div>
       <div class="dash-date-text" id="dash-date"></div>
     </div>
-    <button class="dash-cta" onclick="showView('training')" title="Training starten">
-      <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>
+    <button class="dash-cta" id="dash-cta" onclick="dashCtaClick()" title="Training starten">
+      <svg id="dash-cta-icon" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>
+      <span id="dash-cta-letter" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;color:#000;letter-spacing:.04em"></span>
     </button>
   </div>
 
@@ -798,56 +915,33 @@ canvas{width:100%!important;max-height:220px}
     </div>
   </div>
 
-  <!-- Carousel selector (shown until day selected) -->
-  <div class="day-carousel-wrap" id="day-carousel-wrap">
-    <div class="carousel-label">Trainingstag wählen</div>
-    <div class="carousel-hint">Scrollen · Tippen zum Starten</div>
+  <!-- Day selection screen -->
+  <div class="day-select-screen" id="day-carousel-wrap">
+    <div class="day-select-spacer"></div>
+    <div class="day-select-title">TRAININGSTAG</div>
+    <div style="height:16px;flex-shrink:0"></div>
 
-    <div class="vcarousel-layout">
+    <div class="day-select-body">
       <!-- Left: detail panel -->
-      <div class="vcarousel-detail" id="vcarousel-detail">
-        <div class="vcd-name" id="vcd-name"></div>
-        <div class="vcd-tags" id="vcd-tags"></div>
-        <div class="vcd-exlist" id="vcd-exlist"></div>
+      <div class="day-detail-panel" id="day-detail-panel">
+        <div class="ddp-label">Trainingstag</div>
+        <div class="ddp-name" id="ddp-name"></div>
+        <div class="ddp-tags" id="ddp-tags"></div>
+        <div class="ddp-hint">Tippen zum De-/Aktivieren · Doppeltippen zum Starten</div>
+        <div class="ddp-exlist" id="ddp-exlist"></div>
       </div>
 
-      <!-- Right: vertical wheel picker -->
-      <div class="day-carousel-outer">
-        <div class="day-carousel-selector"></div>
-        <div class="day-carousel" id="day-carousel">
-          <span class="vwheel-spacer"></span>
-          <div class="carousel-item" data-day="A" onclick="carouselTap('A')">
-            <div class="carousel-letter" style="color:#ff6540">A</div>
-            <div class="carousel-name">Brust · Rücken · Trapez</div>
-          </div>
-          <div class="carousel-item" data-day="B" onclick="carouselTap('B')">
-            <div class="carousel-letter" style="color:#9b7fff">B</div>
-            <div class="carousel-name">Schultern & Arme</div>
-          </div>
-          <div class="carousel-item" data-day="C" onclick="carouselTap('C')">
-            <div class="carousel-letter" style="color:#4fa3ff">C</div>
-            <div class="carousel-name">Beine · Trapez · Schulter</div>
-          </div>
-          <div class="carousel-item" data-day="D" onclick="carouselTap('D')">
-            <div class="carousel-letter" style="color:#34e09a">D</div>
-            <div class="carousel-name">Ganzkörper</div>
-          </div>
-          <div class="carousel-item" data-day="E" onclick="carouselTap('E')">
-            <div class="carousel-letter" style="color:#ffd060">E</div>
-            <div class="carousel-name">Calisthenics</div>
-          </div>
-          <span class="vwheel-spacer"></span>
-        </div>
+      <!-- Right: letter buttons A–E -->
+      <div class="day-letter-col" id="day-letter-col"
+        ontouchstart="letterColTouchStart(event)"
+        ontouchmove="letterColTouchMove(event)"
+        ontouchend="letterColTouchEnd(event)">
+        <div class="day-letter-btn active" data-day="A" onclick="selectDayCard('A')" ondblclick="startSelectedDay()" style="--dc:#ff6540">A</div>
+        <div class="day-letter-btn" data-day="B" onclick="selectDayCard('B')" ondblclick="startSelectedDay()" style="--dc:#9b7fff">B</div>
+        <div class="day-letter-btn" data-day="C" onclick="selectDayCard('C')" ondblclick="startSelectedDay()" style="--dc:#4fa3ff">C</div>
+        <div class="day-letter-btn" data-day="D" onclick="selectDayCard('D')" ondblclick="startSelectedDay()" style="--dc:#34e09a">D</div>
+        <div class="day-letter-btn" data-day="E" onclick="selectDayCard('E')" ondblclick="startSelectedDay()" style="--dc:#ffd060">E</div>
       </div>
-    </div>
-
-    <!-- dots row below -->
-    <div class="carousel-dots-row" style="margin-top:8px">
-      <div class="carousel-dot active" id="cdot-0"></div>
-      <div class="carousel-dot" id="cdot-1"></div>
-      <div class="carousel-dot" id="cdot-2"></div>
-      <div class="carousel-dot" id="cdot-3"></div>
-      <div class="carousel-dot" id="cdot-4"></div>
     </div>
   </div>
 
@@ -1021,8 +1115,8 @@ canvas{width:100%!important;max-height:220px}
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
     <div style="min-width:0">
-      <div class="session-info" id="save-info" style="font-size:12px;font-weight:600;color:var(--text)"></div>
-      <div id="save-day-label" style="font-size:9px;color:var(--sub);letter-spacing:.08em;text-transform:uppercase;margin-top:1px"></div>
+      <div class="session-info" id="save-info" style="font-size:12px;font-weight:600;color:rgba(20,28,50,.9)"></div>
+      <div id="save-day-label" style="font-size:9px;color:rgba(60,80,120,.55);letter-spacing:.08em;text-transform:uppercase;margin-top:1px"></div>
     </div>
   </div>
 
@@ -1181,25 +1275,7 @@ function toggleExDisabled(day, exId){
   if(nameEl && nameEl.dataset.day === day) updateCarouselDetail(day);
 }
 function updateCarouselDetail(day){
-  const plan = PLAN[day];
-  const info = DAY_DETAILS[day]||{tags:[]};
-  const nameEl = document.getElementById('vcd-name');
-  if(!nameEl) return;
-  nameEl.textContent = plan?.name||'';
-  nameEl.style.color = plan?.color||'var(--text)';
-  nameEl.dataset.day = day;
-  document.getElementById('vcd-tags').innerHTML = (info.tags||[]).map(t=>
-    `<span class="vcd-tag" style="color:${t.t};border-color:${t.t};background:${t.c}">${t.l}</span>`
-  ).join('');
-  const exList = (plan?.exercises||[]).filter(e=>!e.isGroup).slice(0,8);
-  document.getElementById('vcd-exlist').innerHTML = exList.map(e=>{
-    const disabled = isExDisabled(day, e.id);
-    return `<div class="vcd-ex vcd-ex-toggle${disabled?' vcd-ex-off':''}" onclick="toggleExDisabled('${day}','${e.id}')">
-      <div class="vcd-ex-dot" style="background:${disabled?'var(--dim)':plan?.color||'var(--sub)'}"></div>
-      <span style="${disabled?'text-decoration:line-through;opacity:.4':''}"> ${e.name}</span>
-    </div>`;
-  }).join('');
-  document.getElementById('vcarousel-detail').classList.add('visible');
+  renderDayDetail(day);
 }
 
 function getStorage() {
@@ -1224,26 +1300,86 @@ function showView(id){
   if(id==='history')   renderHistory();
   if(id==='plan')      { selectPlanDay(currentPlanDay, document.querySelector('.plan-etab.active')||document.querySelectorAll('.plan-etab')[0]); }
   if(id==='uebungen')  renderUebungen();
-  if(id==='training' && !currentDay){
-    // Re-snap the day carousel in case layout wasn't ready at init
-    setTimeout(()=>{
-      const carousel = document.getElementById('day-carousel');
-      if(!carousel) return;
-      const items = Array.from(carousel.querySelectorAll('.carousel-item'));
-      const centered = items.find(i=>i.classList.contains('snap-center'));
-      const idx = centered ? items.indexOf(centered) : 0;
-      const item = items[idx];
-      if(item){
-        const targetScrollTop = item.offsetTop - carousel.offsetHeight/2 + item.offsetHeight/2;
-        carousel.scrollTo({ top: targetScrollTop, behavior: 'instant' });
-      }
-    }, 50);
-  }
+  if(id==='training' && !currentDay){ setTimeout(()=>selectDayCard(_selectedDayCard||'A'), 30); }
 }
 
 // ═══════════════════════════════════════════════════════
 // DASHBOARD
 // ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// DASHBOARD CTA – swipe to pick day
+// ═══════════════════════════════════════════════════════
+const _ctaDays  = ['A','B','C','D','E'];
+const _ctaColors = {A:'#ff6540',B:'#9b7fff',C:'#4fa3ff',D:'#34e09a',E:'#ffd060'};
+const _ctaDarkBg = {A:'#4a1800',B:'#2a1a40',C:'#0a1a30',D:'#004030',E:'#302000'};
+let _ctaDayIdx = -1; // -1 = no day selected (show play icon)
+
+function _ctaSetDay(idx){
+  _ctaDayIdx = idx;
+  const btn    = document.getElementById('dash-cta');
+  const icon   = document.getElementById('dash-cta-icon');
+  const letter = document.getElementById('dash-cta-letter');
+  if(!btn) return;
+  if(idx < 0){
+    // reset to play icon
+    icon.style.display = '';
+    letter.style.display = 'none';
+    btn.style.background = 'linear-gradient(135deg,var(--lime),#a0d830)';
+    btn.style.boxShadow  = '0 2px 14px rgba(200,255,110,.3),inset 0 1px 0 rgba(255,255,255,.2)';
+  } else {
+    const day = _ctaDays[idx];
+    const col = _ctaColors[day];
+    icon.style.display = 'none';
+    letter.style.display = '';
+    letter.textContent = day;
+    letter.style.color = '#fff';
+    btn.style.background = `linear-gradient(135deg,${col},${col}bb)`;
+    btn.style.boxShadow  = `0 2px 18px ${col}55,inset 0 1px 0 rgba(255,255,255,.15)`;
+  }
+}
+
+function dashCtaClick(){
+  if(_ctaDayIdx < 0){
+    showView('training');
+  } else {
+    const day = _ctaDays[_ctaDayIdx];
+    showView('training');
+    setTimeout(()=>{ selectDay(day); }, 50);
+  }
+}
+
+(function initDashCtaSwipe(){
+  let _sy = null;
+  let _didSwipe = false;
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const btn = document.getElementById('dash-cta');
+    if(!btn) return;
+    btn.addEventListener('touchstart', e=>{
+      _sy = e.touches[0].clientY;
+      _didSwipe = false;
+      e.preventDefault();
+    }, {passive:false});
+    btn.addEventListener('touchmove', e=>{
+      if(_sy === null) return;
+      e.preventDefault();
+      const dy = _sy - e.touches[0].clientY;
+      const threshold = dy > 0 ? 50 : 80;
+      if(Math.abs(dy) >= threshold){
+        _didSwipe = true;
+        _sy = e.touches[0].clientY;
+        let newIdx = _ctaDayIdx + 1;
+        if(newIdx > _ctaDays.length - 1) newIdx = -1;
+        _ctaSetDay(newIdx);
+      }
+    }, {passive:false});
+    btn.addEventListener('touchend', ()=>{
+      _sy = null;
+      if(!_didSwipe) dashCtaClick();
+      _didSwipe = false;
+    }, {passive:true});
+  });
+})();
+
 function renderDashboard(){
   const d = getStorage();
   const now = new Date();
@@ -1421,6 +1557,7 @@ function selectDay(day){
   const carousel = document.getElementById('day-carousel-wrap');
   const header   = document.getElementById('training-header');
   if(carousel) carousel.style.display='none';
+  document.getElementById('view-training').classList.add('training-active');
   if(header){
     header.style.display='block';
     const plan = PLAN[day];
@@ -1453,8 +1590,9 @@ function abortSession(){
   saveArea.style.display='none'; saveArea.style.transform=''; _footerMinimized=false; _footerExpanded=false; document.getElementById('footer-stats').style.display='none';
   const carousel = document.getElementById('day-carousel-wrap');
   const header   = document.getElementById('training-header');
-  if(carousel) carousel.style.display='flex';
+  if(carousel) carousel.style.display='';
   if(header)   header.style.display='none';
+  document.getElementById('view-training').classList.remove('training-active');
   currentDay=null; sessionData={};
   document.getElementById('training-content').innerHTML='';
   const ci = document.getElementById('cardio-input');
@@ -1651,15 +1789,17 @@ function renderExerciseRow(ex, idx, total, day){
       ).join('');
       return `<div class="set-row" id="setrow-${ex.id}-${si}" data-exid="${ex.id}" data-si="${si}">
         <div class="set-label">Satz ${si+1}</div>
-        <div class="hwheel-group">
-          <div class="hwheel-track bw-track"><div class="hwheel-item active" style="min-width:70px">★ KG</div></div>
-          <div class="hwheel-sep">×</div>
-          <div class="hwheel-track" id="rlist-${ex.id}-${si}" onscroll="onRepsHScroll(this,'${ex.id}',${si})">
+        <div class="set-col">
+          <div class="hwheel-track bw-track" style="width:100%"><div class="hwheel-item active">★ KG</div></div>
+        </div>
+        <div class="set-col">
+          <div class="hwheel-track" id="rlist-${ex.id}-${si}" onscroll="onRepsHScroll(this,'${ex.id}',${si})" style="width:100%">
             <span class="hwheel-spacer"></span>${repsItems}<span class="hwheel-spacer"></span>
           </div>
         </div>
-        <button class="set-done-btn ${set.done?'done':''}" onclick="toggleSetDone('${ex.id}',${si})">${set.done?'✓':'○'}</button>
-        <div class="set-actions">${minusBtn}${plusBtn}</div>
+        <div class="set-actions">
+          <button class="set-done-btn ${set.done?'done':''}" onclick="toggleSetDone('${ex.id}',${si})">${set.done?'✓':'○'}</button>
+        </div>
       </div>`;
     }
 
@@ -1673,26 +1813,26 @@ function renderExerciseRow(ex, idx, total, day){
 
     return `<div class="set-row" id="setrow-${ex.id}-${si}" data-exid="${ex.id}" data-si="${si}">
       <div class="set-label">Satz ${si+1}</div>
-      <div class="hwheel-group">
-        <div class="hwheel-track" id="wlist-${ex.id}-${si}" onscroll="onWeightHScroll(this,'${ex.id}',${si})">
+      <div class="set-col">
+        <div class="hwheel-track" id="wlist-${ex.id}-${si}" onscroll="onWeightHScroll(this,'${ex.id}',${si})" style="width:100%">
           <span class="hwheel-spacer"></span>${weightItems}<span class="hwheel-spacer"></span>
         </div>
-        <div class="hwheel-unit">kg</div>
-        <div class="hwheel-sep">×</div>
-        <div class="hwheel-track" id="rlist-${ex.id}-${si}" onscroll="onRepsHScroll(this,'${ex.id}',${si})">
+      </div>
+      <div class="set-col">
+        <div class="hwheel-track" id="rlist-${ex.id}-${si}" onscroll="onRepsHScroll(this,'${ex.id}',${si})" style="width:100%">
           <span class="hwheel-spacer"></span>${repsItems}<span class="hwheel-spacer"></span>
         </div>
-        <div class="hwheel-unit" style="width:8px">×</div>
       </div>
-      <button class="set-done-btn ${set.done?'done':''}" onclick="toggleSetDone('${ex.id}',${si})">${set.done?'✓':'○'}</button>
-      <div class="set-actions">${minusBtn}${plusBtn}</div>
+      <div class="set-actions">
+        <button class="set-done-btn ${set.done?'done':''}" onclick="toggleSetDone('${ex.id}',${si})">${set.done?'✓':'○'}</button>
+      </div>
     </div>`;
   }).join('');
 
   // Compact suggestion pill – click applies to all sets
   const suggPill = ex.isBodyweight ? '' :
     `<span class="sugg-pill${isInc?' sugg-inc':''}" onclick="applyWeight('${ex.id}',${sugW})">
-      ${isInc?'📈':'🎯'} ${sugW}kg
+      🎯 Ziel-Gewicht: <strong>${sugW}kg</strong>
     </span>`;
 
   // Set status dots
@@ -1703,18 +1843,29 @@ function renderExerciseRow(ex, idx, total, day){
   const dotsTotal = sessionData[ex.id].sets.length;
 
   const ssNoteHtml = ''; // removed per user request
+  const exNum = label;
+  const subInfo = `${dotsTotal} Sätze · ${ex.reps||''} Wdh. · ${ex.rest||''}`;
 
   return `<div class="ex-row">
     <div class="ex-main">
-      <div style="margin-bottom:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <div class="ex-row-title">
+        <div class="ex-num">${exNum}</div>
         <div class="ex-name">${ex.name}</div>
-        ${suggPill}
+        ${muscles}
       </div>
+      <div class="ex-subtitle">${subInfo}</div>
       <div class="set-dots" data-dots="${ex.id}">
         ${dots}
         <span class="set-dots-label">${dotsDone}/${dotsTotal}</span>
       </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:0 16px 10px 32px;">
+        ${suggPill}
+        <button class="weight-change-btn" onclick="applyWeightPrompt('${ex.id}')">✏️ Gewicht ändern</button>
+      </div>
       <div class="set-tracker">${setsHtml}</div>
+      <div class="add-set-row">
+        <button class="add-set-btn-new" onclick="addSet('${ex.id}')">+ Satz hinzufügen</button>
+      </div>
     </div>
   </div>`;
 }
@@ -1727,6 +1878,7 @@ function updateSet(exId, si, field, val){
 }
 
 function autoCheckSet(exId, si){
+  if(_suppressAutoCheck) return;
   const set = sessionData[exId]?.sets[si];
   if(!set || set.done) return;
   const hasWeight = parseFloat(set.weight) > 0 || findExercise(exId)?.isBodyweight;
@@ -1867,10 +2019,13 @@ function selectWeight(exId, si, weight){
 }
 
 // Scroll all wheels to current selection after render
+let _suppressAutoCheck = false;
+
 function scrollBandsToSelected(){
   if(!currentDay) return;
   const day = PLAN[currentDay];
   if(!day || !day.exercises) return;
+  _suppressAutoCheck = true;
   day.exercises.forEach(ex=>{
     if(!ex || ex.isGroup || !sessionData[ex.id]) return;
     sessionData[ex.id].sets.forEach((set,si)=>{
@@ -1879,11 +2034,12 @@ function scrollBandsToSelected(){
         if(wTrack && set.weight) scrollHWheelToValue(wTrack, parseFloat(set.weight), true);
       }
       const rTrack = document.getElementById(`rlist-${ex.id}-${si}`);
-      // scroll to saved reps, or default 6 visually (without saving/auto-checking)
       const rVal = set.reps ? parseInt(set.reps) : 6;
       if(rTrack) scrollHWheelToValue(rTrack, rVal, false);
     });
   });
+  // re-enable autoCheck after all scroll events have fired
+  setTimeout(()=>{ _suppressAutoCheck = false; }, 400);
 }
 
 function applyWeight(exId, weight){
@@ -1919,6 +2075,16 @@ function editWeight(exId){
   d.weightHistory[exId].push({ date: new Date().toISOString(), weight: w, manual: true });
   setStorage(d);
   showToast('✏️ Gewicht auf ' + w + ' kg gesetzt & gespeichert');
+}
+
+function applyWeightPrompt(exId){
+  const ex = findExercise(exId);
+  if(!ex || !sessionData[exId]) return;
+  const cur = sessionData[exId].sets[0]?.weight || '';
+  const val = prompt(`Neues Gewicht für ${ex.name} (kg):`, cur);
+  if(val === null) return;
+  const w = parseFloat(val);
+  if(!isNaN(w) && w > 0){ applyWeight(exId, w); }
 }
 
 function addSet(exId){
@@ -2006,8 +2172,9 @@ function saveSession(){
   // Restore carousel
   const carouselEl = document.getElementById('day-carousel-wrap');
   const headerEl   = document.getElementById('training-header');
-  if(carouselEl) carouselEl.style.display='flex';
+  if(carouselEl) carouselEl.style.display='';
   if(headerEl)   headerEl.style.display='none';
+  document.getElementById('view-training').classList.remove('training-active');
   currentDay=null; sessionData={};
   document.getElementById('training-content').innerHTML='';
   showToast('✅ Training gespeichert!');
@@ -3406,86 +3573,94 @@ const DAY_DETAILS = {
   E: { tags:[{c:'rgba(255,208,96,.14)',t:'#ffd060',l:'Calisthenics'},{c:'rgba(184,255,87,.14)',t:'var(--lime)',l:'Bodyweight'},{c:'rgba(155,127,255,.14)',t:'#9b7fff',l:'Skills'}] },
 };
 
+let _selectedDayCard = 'A';
+
 function initCarousel(){
-  const carousel = document.getElementById('day-carousel');
-  if(!carousel) return;
-  const items = Array.from(carousel.querySelectorAll('.carousel-item'));
-  const dots  = [0,1,2,3,4].map(i=>document.getElementById('cdot-'+i));
-  const detail = document.getElementById('vcarousel-detail');
-  const ITEM_H = 70; // item height (62) + margin (4*2)
-
-  let _snapTimer = null;
-  let _lastIdx = -1;
-
-  function getClosestIdx(){
-    const cy = carousel.scrollTop + carousel.offsetHeight / 2;
-    let closestIdx = 0, closestDist = Infinity;
-    items.forEach((item, i) => {
-      const itemCy = item.offsetTop + item.offsetHeight / 2;
-      const dist = Math.abs(itemCy - cy);
-      if(dist < closestDist){ closestDist = dist; closestIdx = i; }
-    });
-    return closestIdx;
-  }
-
-  function snapToIdx(idx, smooth){
-    const item = items[idx];
-    if(!item) return;
-    const targetScrollTop = item.offsetTop - carousel.offsetHeight/2 + item.offsetHeight/2;
-    carousel.scrollTo({ top: targetScrollTop, behavior: smooth ? 'smooth' : 'instant' });
-  }
-
-  function updateActive(idx){
-    if(idx === _lastIdx) return;
-    _lastIdx = idx;
-    items.forEach((item, i) => item.classList.toggle('snap-center', i === idx));
-    dots.forEach((d, i) => d?.classList.toggle('active', i === idx));
-    const day = items[idx]?.dataset?.day;
-    if(day) updateDetail(day);
-  }
-
-  function updateDetail(day){
-    updateCarouselDetail(day);
-  }
-
-  // Update active item while scrolling (no snap yet)
-  carousel.addEventListener('scroll', ()=>{
-    updateActive(getClosestIdx());
-    // Debounce snap
-    clearTimeout(_snapTimer);
-    _snapTimer = setTimeout(()=>{
-      const idx = getClosestIdx();
-      snapToIdx(idx, true);
-      updateActive(idx);
-    }, 80);
-  }, {passive:true});
-
-  // Initial: show A — wait for full layout
-  function doInitialSnap(){
-    snapToIdx(0, false);
-    updateActive(0);
-  }
-  // Multiple attempts to ensure layout is complete
-  setTimeout(doInitialSnap, 80);
-  setTimeout(doInitialSnap, 250);
+  setTimeout(()=>{ selectDayCard('A'); }, 50);
 }
 
-// Tap on an item: if already centered → start training, else scroll to it
-function carouselTap(day){
-  const carousel = document.getElementById('day-carousel');
-  const items = Array.from(carousel.querySelectorAll('.carousel-item'));
-  const centered = items.find(i=>i.classList.contains('snap-center'));
-  if(centered?.dataset?.day === day){
-    selectDay(day);
+function selectDayCard(day){
+  _selectedDayCard = day;
+  document.querySelectorAll('.day-letter-btn').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.day === day);
+  });
+  const plan = PLAN[day];
+  const startBtn = document.getElementById('ddp-start-btn');
+  if(startBtn && plan?.color) startBtn.style.background = `linear-gradient(135deg,${plan.color},${plan.color}99)`;
+  renderDayDetail(day);
+}
+
+function renderDayDetail(day){
+  const plan = PLAN[day];
+  const info = DAY_DETAILS[day]||{tags:[]};
+  const nameEl = document.getElementById('ddp-name');
+  if(!nameEl) return;
+  nameEl.textContent = plan?.name||'';
+  nameEl.style.color = plan?.color||'var(--text)';
+  document.getElementById('ddp-tags').innerHTML = (info.tags||[]).map(t=>
+    `<span class="ddp-tag" style="color:${t.t};border-color:${t.t};background:${t.c}">${t.l}</span>`
+  ).join('');
+  const exList = (plan?.exercises||[]).filter(e=>!e.isGroup);
+  document.getElementById('ddp-exlist').innerHTML = exList.map(e=>{
+    const off = isExDisabled(day, e.id);
+    return `<div class="ddp-ex${off?' off':''}" onclick="toggleDayEx('${day}','${e.id}')">
+      <div class="ddp-ex-dot" style="background:${off?'var(--dim)':plan?.color||'var(--sub)'}"></div>
+      <span class="ddp-ex-name">${e.name}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleDayEx(day, exId){
+  toggleExDisabled(day, exId);
+  renderDayDetail(day);
+}
+
+function startSelectedDay(){ selectDay(_selectedDayCard); }
+
+// ── Letter column swipe-to-select ──
+function _getLetterBtnAtY(y){
+  const col = document.getElementById('day-letter-col');
+  if(!col) return null;
+  const btns = col.querySelectorAll('.day-letter-btn');
+  for(const btn of btns){
+    const r = btn.getBoundingClientRect();
+    if(y >= r.top && y <= r.bottom) return btn;
+  }
+  return null;
+}
+
+let _letterLastTap = 0;
+let _letterLastDay = null;
+
+function letterColTouchStart(e){
+  e.preventDefault();
+  const btn = _getLetterBtnAtY(e.touches[0].clientY);
+  if(!btn?.dataset?.day) return;
+  const day = btn.dataset.day;
+  const now = Date.now();
+  if(now - _letterLastTap < 350 && _letterLastDay === day){
+    // double-tap → start
+    _letterLastTap = 0; _letterLastDay = null;
+    selectDayCard(day);
+    startSelectedDay();
   } else {
-    const idx = items.findIndex(i=>i.dataset.day===day);
-    if(idx>=0){
-      const item = items[idx];
-      const targetScrollTop = item.offsetTop - carousel.offsetHeight/2 + item.offsetHeight/2;
-      carousel.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
-    }
+    _letterLastTap = now;
+    _letterLastDay = day;
+    selectDayCard(day);
   }
 }
+
+function letterColTouchMove(e){
+  e.preventDefault();
+  const btn = _getLetterBtnAtY(e.touches[0].clientY);
+  if(btn?.dataset?.day) selectDayCard(btn.dataset.day);
+}
+
+function letterColTouchEnd(e){}
+
+// legacy compat
+function updateCarouselDetail(day){ renderDayDetail(day); }
+function carouselTap(day){ selectDayCard(day); }
 </script>
 </body>
 </html>
