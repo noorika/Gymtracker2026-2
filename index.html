@@ -62,8 +62,8 @@ nav{
   box-shadow: 0 1px 0 rgba(255,255,255,.04);
   display:flex;align-items:center;justify-content:space-between;
   padding:0 24px;
-  padding-top:env(safe-area-inset-top);
-  height:calc(54px + env(safe-area-inset-top));
+  padding-top:max(env(safe-area-inset-top), 10px);
+  height:calc(54px + max(env(safe-area-inset-top), 10px));
 }
 .nav-logo{
   font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;
@@ -803,8 +803,15 @@ canvas{width:100%!important;max-height:220px}
 .reorder-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--s2);border:1px solid var(--border);border-radius:10px;cursor:grab;transition:all .15s;user-select:none;-webkit-tap-highlight-color:transparent;}
 .reorder-item:hover{border-color:var(--border2);background:var(--s3)}
 .reorder-item:active,.reorder-item.drag-over{cursor:grabbing;border-color:var(--lime);background:rgba(184,255,87,.06)}
-.plan-edit-tabs{display:flex;gap:8px;margin-bottom:20px}
-.plan-etab{padding:8px 20px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--sub);font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.plan-edit-tabs{
+  display:flex;gap:8px;margin-bottom:20px;
+  overflow-x:auto;overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding-bottom:4px;
+}
+.plan-edit-tabs::-webkit-scrollbar{display:none;}
+.plan-etab{padding:8px 20px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--sub);font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0;}
 .plan-etab:hover{color:var(--text);border-color:var(--border2)}
 .plan-etab.active{background:var(--s2);border-color:var(--border2);color:var(--text)}
 .plan-ex-edit-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
@@ -975,6 +982,8 @@ canvas{width:100%!important;max-height:220px}
     <button class="hfilter" onclick="filterHistory('A',this)">Tag A</button>
     <button class="hfilter" onclick="filterHistory('B',this)">Tag B</button>
     <button class="hfilter" onclick="filterHistory('C',this)">Tag C</button>
+    <button class="hfilter" onclick="filterHistory('D',this)">Tag D</button>
+    <button class="hfilter" onclick="filterHistory('E',this)">Tag E</button>
   </div>
 
   <div class="history-list" id="history-list"></div>
@@ -994,6 +1003,9 @@ canvas{width:100%!important;max-height:220px}
     <button class="plan-etab active" onclick="selectPlanDay('A',this)">Tag A</button>
     <button class="plan-etab" onclick="selectPlanDay('B',this)">Tag B</button>
     <button class="plan-etab" onclick="selectPlanDay('C',this)">Tag C</button>
+    <button class="plan-etab" onclick="selectPlanDay('D',this)">Tag D</button>
+    <button class="plan-etab" onclick="selectPlanDay('E',this)">Tag E</button>
+    <button class="plan-etab" onclick="showAddDayModal()" style="border-style:dashed;opacity:.7">+ Neu</button>
   </div>
 
   <div id="plan-edit-content"></div>
@@ -2335,6 +2347,83 @@ function renderChart(){
 let currentPlanDay = 'A';
 let planDragSrc = null;
 
+const DAY_COLORS = {A:'#ff6540',B:'#9b7fff',C:'#4fa3ff',D:'#34e09a',E:'#ffd060'};
+
+function showAddDayModal(){
+  const existing = Object.keys(PLAN).join(', ');
+  const box = document.getElementById('ueb-modal-box');
+  box.innerHTML = `
+    <div class="modal-body">
+      <div class="modal-name">➕ Neuen Trainingstag</div>
+      <div class="modal-note">Vorhandene Tage: ${existing}</div>
+      <div class="modal-section" style="margin-top:14px">Kürzel (Buchstabe oder Zahl)</div>
+      <input id="new-day-key" type="text" maxlength="2" placeholder="z.B. F oder 6"
+        style="width:100%;margin-top:6px;padding:10px 12px;border-radius:10px;border:1.5px solid rgba(60,80,120,.2);background:rgba(255,255,255,.8);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:rgba(20,28,50,.9);outline:none;text-transform:uppercase"/>
+      <div class="modal-section" style="margin-top:12px">Name des Trainingstags</div>
+      <input id="new-day-name" type="text" placeholder="z.B. Ganzkörper Intensiv"
+        style="width:100%;margin-top:6px;padding:10px 12px;border-radius:10px;border:1.5px solid rgba(60,80,120,.2);background:rgba(255,255,255,.8);font-family:'Syne',sans-serif;font-size:14px;color:rgba(20,28,50,.9);outline:none"/>
+      <div class="modal-section" style="margin-top:12px">Farbe</div>
+      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+        ${['#ff6540','#9b7fff','#4fa3ff','#34e09a','#ffd060','#ff5fa0','#40e0a0','#c87850'].map(c=>
+          `<div onclick="document.getElementById('new-day-color').value='${c}';this.parentElement.querySelectorAll('div').forEach(d=>d.style.outline='none');this.style.outline='2.5px solid #000'"
+            style="width:28px;height:28px;border-radius:8px;background:${c};cursor:pointer;flex-shrink:0"></div>`
+        ).join('')}
+        <input id="new-day-color" type="hidden" value="#6090b8"/>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:18px">
+        <button onclick="document.getElementById('ueb-modal').classList.remove('open')"
+          style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(60,80,120,.2);background:transparent;color:rgba(60,80,120,.7);font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Abbrechen</button>
+        <button onclick="confirmAddDay()"
+          style="flex:1;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--lime),#8ab870);color:#000;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Erstellen</button>
+      </div>
+    </div>`;
+  document.getElementById('ueb-modal').classList.add('open');
+}
+
+function confirmAddDay(){
+  const keyInput = document.getElementById('new-day-key');
+  const nameInput = document.getElementById('new-day-name');
+  const colorInput = document.getElementById('new-day-color');
+  const key = (keyInput?.value||'').trim().toUpperCase();
+  const name = (nameInput?.value||'').trim();
+  const color = colorInput?.value || '#6090b8';
+  if(!key){ showToast('Bitte ein Kürzel eingeben'); return; }
+  if(!name){ showToast('Bitte einen Namen eingeben'); return; }
+  if(PLAN[key]){ showToast(`Tag ${key} existiert bereits`); return; }
+
+  // Create new day in PLAN
+  PLAN[key] = { name, color, exercises: [] };
+
+  // Add to DAY_DETAILS
+  DAY_DETAILS[key] = { tags: [] };
+
+  // Add tab to plan view
+  const tabs = document.getElementById('plan-edit-tabs');
+  const newBtn = document.createElement('button');
+  newBtn.className = 'plan-etab';
+  newBtn.textContent = `Tag ${key}`;
+  newBtn.onclick = function(){ selectPlanDay(key, this); };
+  // Insert before the "+ Neu" button
+  tabs.insertBefore(newBtn, tabs.lastElementChild);
+
+  // Add to day-letter-col in training selection
+  const letterCol = document.getElementById('day-letter-col');
+  if(letterCol){
+    const newLetter = document.createElement('div');
+    newLetter.className = 'day-letter-btn';
+    newLetter.dataset.day = key;
+    newLetter.style.cssText = `--dc:${color}`;
+    newLetter.textContent = key;
+    newLetter.onclick = function(){ selectDayCard(key); };
+    newLetter.ondblclick = function(){ startSelectedDay(); };
+    letterCol.insertBefore(newLetter, letterCol.lastElementChild);
+  }
+
+  document.getElementById('ueb-modal').classList.remove('open');
+  selectPlanDay(key, document.querySelector(`.plan-etab[onclick*="${key}"]`));
+  showToast(`✅ Tag ${key} – ${name} erstellt!`);
+}
+
 function selectPlanDay(day, btn){
   currentPlanDay = day;
   document.querySelectorAll('.plan-etab').forEach(b=>b.classList.remove('active'));
@@ -3424,13 +3513,21 @@ function doExport(){
 
   const blob = new Blob([content], {type: mimeType});
   const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url;
-  a.download = 'gymtracker_'+(fromVal||'alle')+'_bis_'+(toVal||'heute')+'.'+ext;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a); URL.revokeObjectURL(url);
+  // iOS Safari doesn't support a.download — open in new tab instead
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if(isIOS){
+    window.open(url, '_blank');
+    showToast('📂 Datei im neuen Tab geöffnet – lange tippen zum Speichern');
+  } else {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'gymtracker_'+(fromVal||'alle')+'_bis_'+(toVal||'heute')+'.'+ext;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    showToast('✅ Export als .'+ext+' heruntergeladen!');
+  }
+  setTimeout(()=>URL.revokeObjectURL(url), 3000);
   document.getElementById('export-modal').classList.remove('open');
-  showToast('✅ Export als .'+ext+' heruntergeladen!');
 }
 
 // ─── EXERCISE REORDER ───
